@@ -61,16 +61,18 @@ public class ResourceController {
 		return retValue;
 	}
 
-	@GetMapping(path = "/{resourceId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Resource find(@RequestBody String resourceId) throws IamNotFoundException {
-		List<Resource> resources = resoureRepository.findByResourceId(resourceId);
-
-		if (resources.isEmpty()) {
-			throw new IamNotFoundException("Resource not found!");
-		}
-
-		return resources.get(0);
-	}
+	/*
+	 * @GetMapping(path = "/{resourceId}", consumes =
+	 * MediaType.APPLICATION_JSON_VALUE, produces =
+	 * MediaType.APPLICATION_JSON_VALUE) public Resource find(@RequestBody String
+	 * resourceId) throws IamNotFoundException { List<Resource> resources =
+	 * resoureRepository.findByResourceId(resourceId);
+	 * 
+	 * if (resources.isEmpty()) { throw new
+	 * IamNotFoundException("Resource not found!"); }
+	 * 
+	 * return resources.get(0); }
+	 */
 
 	@GetMapping(path = "/findall")
 	public List<Resource> findAll() {

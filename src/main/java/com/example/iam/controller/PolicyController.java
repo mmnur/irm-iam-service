@@ -36,11 +36,6 @@ public class PolicyController {
 		return retValue;
 	}
 	
-	public List<Policy> getPolicyByResourceId(String resourceId)
-	{
-		//TODO
-	}
-
 	@GetMapping(path = "/findall")
 	public List<Policy> findAll() {
 		List<Policy> policies = policyRepository.findAll();
