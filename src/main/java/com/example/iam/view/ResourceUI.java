@@ -2,7 +2,7 @@ package com.example.iam.view;
 
 public class ResourceUI
 { 
-	private String resourceId;	
+	private int resourceId;	
 	private String iconUri;
 	private String type;
 	private String name;
@@ -27,7 +27,7 @@ public class ResourceUI
 		this.resourceScopes = resourceScopes;				
 	}
 	
-	public String getResourceId()
+	public int getResourceId()
 	{
 		return resourceId;
 	}

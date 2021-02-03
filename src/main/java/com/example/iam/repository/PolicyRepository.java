@@ -6,6 +6,6 @@ import com.example.iam.model.Policy;
 
 public interface PolicyRepository extends CrudRepository<Policy, Long>
 {
-	List<Policy> findByResourceId(String resourceId);
+	List<Policy> findByResourceId(int resourceId);
 	List<Policy> findAll();
 }

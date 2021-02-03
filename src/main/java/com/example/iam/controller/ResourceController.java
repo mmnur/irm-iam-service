@@ -4,10 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.example.iam.repository.ResoureRepository;
+import com.example.iam.repository.ResourceRepository;
+import com.example.iam.utils.IrmClient;
 import com.example.iam.view.ResourceUI;
+import com.example.iam.error.IamIrmException;
 import com.example.iam.error.IamNotFoundException;
-import com.example.iam.irm.IrmClient;
 import com.example.iam.model.Resource;
 
 import org.springframework.http.MediaType;
@@ -23,11 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/resourceSet")
 public class ResourceController {
 	@Autowired
-	ResoureRepository resoureRepository;
+	ResourceRepository resoureRepository;
 
 	@PostMapping(path = "/initreg", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Map<String, String> registerInitialize(@RequestBody ResourceUI resourceUI)
+			throws IamIrmException
 	{
 		Resource resource = resoureRepository.save(
 				new Resource(resourceUI.getIconUri(), resourceUI.getType(), resourceUI.getName(), resourceUI.getResourceScopes()));
@@ -36,7 +38,7 @@ public class ResourceController {
 		String challenge = irmClient.regInit(resourceUI);
 
 		Map<String, String> retValue = new HashMap<String, String>();
-		retValue.put("resourceId", resource.getResourceId());
+		retValue.put("resourceId", String.valueOf(resource.getResourceId()));
 		retValue.put("challenge", challenge);
 
 		return retValue;
@@ -45,17 +47,22 @@ public class ResourceController {
 	@PostMapping(path = "/finishreg", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Map<String, String> registerFinish(@RequestBody ResourceUI resourceUI)
-			throws IamNotFoundException
+			throws IamNotFoundException, IamIrmException
 	{
-		if (resoureRepository.findByResourceId(resourceUI.getResourceId()).size() <= 0) {
+		List<Resource> resources = resoureRepository.findByResourceId(resourceUI.getResourceId());		
+		if (resources.size() <= 0) {
 			throw new IamNotFoundException(resourceUI.getResourceId() + " not found!");
 		}
 	
 		IrmClient irmClient = new IrmClient();
 		String entityId = irmClient.regFinish(resourceUI);
 
+		Resource resourceToUpdate = resources.get(0);
+		resourceToUpdate.setEntityId(entityId);
+		resourceToUpdate = resoureRepository.save(resourceToUpdate);
+		
 		Map<String, String> retValue = new HashMap<String, String>();
-		retValue.put("resourceId", resourceUI.getResourceId());
+		retValue.put("resourceId", String.valueOf(resourceUI.getResourceId()));
 		retValue.put("entityId", entityId);
 
 		return retValue;

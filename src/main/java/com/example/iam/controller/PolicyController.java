@@ -23,15 +23,18 @@ public class PolicyController {
 	@Autowired
 	PolicyRepository policyRepository;
 
-	@PostMapping(path = "/initreg", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public Map<String, String> registerInitialize(@RequestBody PolicyUI policyUI)
+	public Map<String, String> register(@RequestBody PolicyUI policyUI)
 	{
-		Policy policy = policyRepository.save(
-				new Policy(policyUI.getResourceId(), policyUI.getScopes(), policyUI.getRelationships(), policyUI.getDegreeOfRelationship()));
+		Policy policy = policyRepository.save(new Policy(
+				policyUI.getResourceId(),
+				policyUI.getScopes(),
+				policyUI.getRelationships(),
+				policyUI.getDegreeOfRelationship()));
 
 		Map<String, String> retValue = new HashMap<String, String>();
-		retValue.put("policyId", policy.getPolicyId());
+		retValue.put("policyId", String.valueOf(policy.getPolicyId()));
 
 		return retValue;
 	}

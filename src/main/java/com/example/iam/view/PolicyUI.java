@@ -6,7 +6,7 @@ public class PolicyUI implements Serializable
 {
 	private static final long serialVersionUID = -7745939071878517482L; 
 	
-	private String resourceId;
+	private int resourceId;
 	private String scopes;
 	private String relationships;
 	private int degreeOfRelationship;
@@ -15,7 +15,7 @@ public class PolicyUI implements Serializable
 	{		
 	}
 	
-	public PolicyUI(String resourceId, String scopes, String relationships, int degreeOfRelationship)
+	public PolicyUI(int resourceId, String scopes, String relationships, int degreeOfRelationship)
 	{
 		this.resourceId = resourceId;
 		this.scopes = scopes;
@@ -43,12 +43,12 @@ public class PolicyUI implements Serializable
 		this.relationships = relationships;
 	}
 
-	public String getResourceId()
+	public int getResourceId()
 	{
 		return resourceId;
 	}
 
-	public void setResourceId(String resourceId)
+	public void setResourceId(int resourceId)
 	{
 		this.resourceId = resourceId;
 	}

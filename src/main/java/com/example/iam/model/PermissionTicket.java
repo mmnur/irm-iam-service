@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Resources")
+@Table(name = "IamPermissionTickets")
 public class PermissionTicket
 {
 	@Id
@@ -15,7 +15,7 @@ public class PermissionTicket
 	protected String id;
 	
 	private String claims;
-    private String resourceId;
+    private int resourceId;
     private String resourceScopes;
     
 	public String getId() {
@@ -31,10 +31,10 @@ public class PermissionTicket
 	public void setClaims(String claims) {
 		this.claims = claims;
 	}
-	public String getResource_id() {
+	public int getResource_id() {
 		return resourceId;
 	}
-	public void setResource_id(String resourceId) {
+	public void setResource_id(int resourceId) {
 		this.resourceId = resourceId;
 	}
 	public String getResource_scopes() {

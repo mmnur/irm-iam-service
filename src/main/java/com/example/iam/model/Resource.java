@@ -16,7 +16,7 @@ public class Resource implements Serializable
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	protected String resourceId;	
+	protected int resourceId;	
     
 	@Column(name = "IconUri")
 	private String iconUri;
@@ -45,7 +45,7 @@ public class Resource implements Serializable
 		this.resourceScopes = resourceScopes;				
 	}
 	
-	public String getResourceId()
+	public int getResourceId()
 	{
 		return resourceId;
 	}

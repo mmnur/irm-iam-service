@@ -2,6 +2,8 @@ package com.example.iam.model;
 
 import java.io.Serializable;
 
+/*@Entity
+@Table(name = "IamClaims")*/
 public class Claim implements Serializable
 { 
 	private static final long serialVersionUID = -914403979669919502L;

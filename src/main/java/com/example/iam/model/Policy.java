@@ -17,10 +17,10 @@ public class Policy implements Serializable
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	protected String policyId;
+	protected int policyId;
 	
 	@Column(name = "ResourceId")
-	private String resourceId;
+	private int resourceId;
 	
 	@Column(name = "Scopes")
 	private String scopes;
@@ -30,12 +30,12 @@ public class Policy implements Serializable
 	
 	@Column(name = "DegreeOfRelationship")
 	private int degreeOfRelationship;
-
+	
 	protected Policy()
 	{		
 	}
 	
-	public Policy(String resourceId, String scopes, String relationships, int degreeOfRelationship)
+	public Policy(int resourceId, String scopes, String relationships, int degreeOfRelationship)
 	{
 		this.resourceId = resourceId;
 		this.scopes = scopes;
@@ -43,7 +43,7 @@ public class Policy implements Serializable
 		this.degreeOfRelationship = degreeOfRelationship;
 	}
 	
-	public String getPolicyId()
+	public int getPolicyId()
 	{
 		return policyId;
 	}
@@ -68,12 +68,12 @@ public class Policy implements Serializable
 		this.relationships = relationships;
 	}
 
-	public String getResourceId()
+	public int getResourceId()
 	{
 		return resourceId;
 	}
 
-	public void setResourceId(String resourceId)
+	public void setResourceId(int resourceId)
 	{
 		this.resourceId = resourceId;
 	}

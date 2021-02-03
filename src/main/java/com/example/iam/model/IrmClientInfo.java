@@ -10,7 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "IrmClientInfo")
+@Table(name = "IamClientInfo")
 public class IrmClientInfo implements Serializable
 {
 	private static final long serialVersionUID = -1736520105208077847L;

@@ -2,7 +2,9 @@ package com.example.iam.model;
 
 import java.io.Serializable;
 
-public class AuthZRequest implements Serializable
+/*@Entity
+@Table(name = "IamAuthZRequests")
+*/public class AuthZRequest implements Serializable
 {
 	private static final long serialVersionUID = -5507979975156605472L;
 	
