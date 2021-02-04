@@ -7,7 +7,6 @@ import java.util.Map;
 import com.example.iam.repository.PolicyRepository;
 import com.example.iam.repository.ResourceRepository;
 import com.example.iam.utils.IrmClient;
-import com.example.iam.utils.IrmClient2;
 import com.example.iam.view.RelationshipUI;
 import com.example.iam.error.IamIrmException;
 import com.example.iam.error.IamNotFoundException;
