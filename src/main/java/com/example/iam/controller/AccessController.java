@@ -7,6 +7,7 @@ import java.util.Map;
 import com.example.iam.repository.PolicyRepository;
 import com.example.iam.repository.ResourceRepository;
 import com.example.iam.utils.IrmClient;
+import com.example.iam.utils.IrmClient2;
 import com.example.iam.view.RelationshipUI;
 import com.example.iam.error.IamIrmException;
 import com.example.iam.error.IamNotFoundException;
@@ -37,30 +38,56 @@ public class AccessController
 	public Map<String, String> checkAccess(@RequestParam String targetEntityId, @RequestParam String actorEntityId, @RequestParam String scopes)
 			throws IamIrmException, IamNotFoundException
 	{
-		Boolean isAuthorized = false;
-		Resource resource = resourceRepository.findByEntityId(targetEntityId).get(0);
+		List<Resource> resources = resourceRepository.findByEntityId(targetEntityId);
+		if (resources.size() < 1) {
+			throw new IamNotFoundException("Not found: " + targetEntityId);
+		}
+		Resource resource = resources.get(0);
+		
 		List<Policy> policies = policyRepository.findByResourceId(resource.getResourceId());
+		if (policies.size() < 1) {
+			throw new IamNotFoundException("No policy found for: " + targetEntityId);
+		}
+
+		HashMap<String, String> scopesRequested = new HashMap<String, String>();
+		for(String scope: scopes.split(",")) {
+			scopesRequested.put(scope.toLowerCase(), "deny");
+		}
+		
 		for (Policy policy:policies) {
-			List<List<RelationshipUI>> allRelationships = new IrmClient().findRelationships(targetEntityId, actorEntityId, policy.getDegreeOfRelationship());
-			if (allRelationships != null) {
-				for(List<RelationshipUI> relationships:allRelationships) {
-					for(RelationshipUI relationship:relationships) {
-						//if (relationship.getEntitySrc())
+			try {
+				List<List<RelationshipUI>> allRelationships = new IrmClient().findRelationships(targetEntityId, actorEntityId, policy.getDegreeOfRelationship());
+				if (allRelationships != null) {
+					for(List<RelationshipUI> relationships:allRelationships) {
+						for(RelationshipUI relationship:relationships) {
+							if (relationship.getEntitySrc().compareToIgnoreCase(targetEntityId) == 0 &&
+								relationship.getRelationTypeS2T().compareToIgnoreCase("OwnedBy") == 0) {
+								continue;
+							} else {
+								String[] policyRelationshipsCriteria = policy.getRelationships().split(",");
+								if (relationship.getEntityTgt().compareToIgnoreCase(actorEntityId) == 0) {
+									for (String policyRelationship:policyRelationshipsCriteria) {
+										if (policyRelationship.compareToIgnoreCase(relationship.getRelationTypeT2S()) == 0) {
+											for (String policyScope:policy.getScopes().split(",")) {
+												if (scopesRequested.containsKey(policyScope.toLowerCase())) {
+													scopesRequested.put(policyScope.toLowerCase(), "approve");
+												}
+											}
+										}
+									}
+								}								
+							}
+						}
 					}
 				}
+			} catch(Exception e) {
+				e.printStackTrace();
 			}
 		}
 		
-		Map<String, String> retValue = new HashMap<String, String>();
-		retValue.put("targetEntityId", targetEntityId);
-		retValue.put("actorEntityId", actorEntityId);
-		retValue.put("scopes", scopes);
-		if (isAuthorized) {
-			retValue.put("Authorization", "Allow");
-		} else {
-			retValue.put("Authorization", "Deny");
-		}
-
-		return retValue;
+		scopesRequested.put("targetEntityId", targetEntityId);
+		scopesRequested.put("actorEntityId", actorEntityId);
+		
+		return scopesRequested;
 	}
 }

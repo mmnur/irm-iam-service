@@ -1,5 +1,6 @@
 package com.example.iam.utils;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -11,15 +12,15 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.iam.error.IamIrmException;
 import com.example.iam.view.DeviceUI;
 import com.example.iam.view.RelationshipUI;
 import com.example.iam.view.ResourceUI;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 @ComponentScan(basePackages = "com.example")
 public class IrmClient {
@@ -62,8 +63,7 @@ public class IrmClient {
 		device.setChallengeResponse(resourceUI.getChallengeResponse());
 		HttpEntity<DeviceUI> entity = new HttpEntity<DeviceUI>(device, headers);
 		 
-		RestTemplate restTemplate = new RestTemplate();
-		 
+		RestTemplate restTemplate = new RestTemplate();		 
 		irmServiceUrl = "http://localhost:9090";
 		Map<String, String> response = null;
 		try {
@@ -76,61 +76,22 @@ public class IrmClient {
 	}
 	
 	public List<List<RelationshipUI>> findRelationships(String targetEntityId, String actorEntityId, int degreeOfRelationship)
-			throws IamIrmException
+			throws JsonParseException, JsonMappingException, IOException
 	{
 		HttpHeaders headers = new HttpHeaders();
-	    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-
-	    irmServiceUrl = "http://localhost:9090" + "/relationships/find";
-	    UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(irmServiceUrl);
-	    builder.queryParam("entityIdSrc", targetEntityId);
-	    builder.queryParam("entityIdTgt", actorEntityId);
-	    builder.queryParam("maxDegreeOfRelationship", String.valueOf(degreeOfRelationship));
-	     
-	    RestTemplate restTemplate = new RestTemplate();	     
-	    ResponseEntity<List<List<RelationshipUI>>> response = null;
-	    try {
-	    	ParameterizedTypeReference<List<List<RelationshipUI>>> responseType = new ParameterizedTypeReference<List<List<RelationshipUI>>>() {};
-	    	response = restTemplate.exchange(
-	    			builder.toUriString(),
-					HttpMethod.GET,
-					new HttpEntity(headers),	    			
-					responseType);
-	    } catch (HttpClientErrorException e) {	    	
-	    	e.printStackTrace();
-	    	return null;
-	    }	     
-	    return response.getBody();		
-	}
-	
-	
-	public List<List<RelationshipUI>> findRelationshipsByType(String actorEntityId, String orgType, int degreeOfRelationship)
-			throws IamIrmException
-	{
-		HttpHeaders headers = new HttpHeaders();
-	    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-
-	    irmServiceUrl = "http://localhost:9090" + "/relationships/findbytype";
-	    UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(irmServiceUrl);
-	    builder.queryParam("actorEntityIdSrc", actorEntityId);
-	    builder.queryParam("orgType", orgType);
-	    builder.queryParam("maxDegreeOfRelationship", String.valueOf(degreeOfRelationship));
-	     
-	    RestTemplate restTemplate = new RestTemplate();	     
-	    ResponseEntity<List<List<RelationshipUI>>> response = null;
+	    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));    
 	    
-	    try {
-	    	
-	    	ParameterizedTypeReference<List<List<RelationshipUI>>> responseType = new ParameterizedTypeReference<List<List<RelationshipUI>>>() {};
-	    	response = restTemplate.exchange(
-	    			builder.toUriString(), 
-					HttpMethod.GET,
-					new HttpEntity(headers),
-					responseType);
-	    } catch (HttpClientErrorException e) {	    	
-	    	e.printStackTrace();
-	    	return null;
-	    }	     
-	    return response.getBody();		
+	    FindRelationshipRequest findRelationshipRequest = new FindRelationshipRequest();
+	    findRelationshipRequest.setEntityIdSrc(targetEntityId);
+	    findRelationshipRequest.setEntityIdTgt(actorEntityId);
+	    findRelationshipRequest.setMaxDegreeOfRelationship(degreeOfRelationship);
+	    HttpEntity<FindRelationshipRequest> entity = new HttpEntity<FindRelationshipRequest>(findRelationshipRequest, headers);
+	    
+	    RestTemplate restTemplate = new RestTemplate();
+	    irmServiceUrl = "http://localhost:9090";
+		ParameterizedTypeReference<List<List<RelationshipUI>>> parameterizedTypeReference = new ParameterizedTypeReference<List<List<RelationshipUI>>>(){};		    
+		List<List<RelationshipUI>> response = (List<List<RelationshipUI>>) restTemplate.exchange(irmServiceUrl + "/relationships/find", HttpMethod.POST, entity, parameterizedTypeReference).getBody();
+		
+		return response;	
 	}
 }
