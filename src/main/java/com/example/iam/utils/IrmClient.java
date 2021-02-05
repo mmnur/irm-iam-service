@@ -22,7 +22,6 @@ import com.example.iam.view.ResourceUI;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-@ComponentScan(basePackages = "com.example")
 public class IrmClient {
 	
 	@Value( "${irm.server.url}" )
